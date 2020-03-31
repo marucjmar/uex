@@ -11,18 +11,19 @@ defmodule Uex.MixProject do
       lockfile: "./mix.lock",
       elixir: "~> 1.10-rc",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: description(),
+      package: package(),
+      source_url: "https://github.com/marucjmar/uex"
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:temp, "~> 0.4"},
@@ -34,6 +35,20 @@ defmodule Uex.MixProject do
       {:sweet_xml, "~> 0.6"},
       {:mogrify, "~> 0.7.3"},
       {:elixir_uuid, "~> 1.2"}
+    ]
+  end
+
+  defp description() do
+    "Composable file upload library for Elixir."
+  end
+
+  defp package() do
+    [
+      name: "uex",
+      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
+                license* CHANGELOG* changelog* src),
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/marucjmar/uex"}
     ]
   end
 end
