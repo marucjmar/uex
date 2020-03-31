@@ -60,6 +60,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 
 ## Store custom middlewares
 
+```elixir
 defmodule MyApp.Storage do
   use Uex.FileStorage,
     otp_app: :my_app,
@@ -70,6 +71,7 @@ defmodule MyApp.Storage do
       s3: [acl: :public_read]
     ]
 end
+```
 
 # Override Options
 
