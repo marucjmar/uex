@@ -52,7 +52,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 )
 |> Uex.add_middleware(&MyApp.Transform.rename_file/2)
 |> Uex.add_middleware(&Uex.Middlewares.Transform.transform/2)
-|> MyApp.Storage.Storage.store()
+|> MyApp.Storage.store()
 # {:ok, %Uex.Models.UploadedFile{}}
 ```
 
