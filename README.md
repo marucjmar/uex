@@ -7,6 +7,7 @@
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 by adding `uex` to your list of dependencies in `mix.exs`:
 
+#### mix.exs
 ```elixir
 def deps do
   [
@@ -15,6 +16,7 @@ def deps do
 end
 ```
 
+#### config.exs
 ```elixir
 config :my_app, MyApp.Storage,
   access_key_id: "xxxxx",
@@ -23,6 +25,7 @@ config :my_app, MyApp.Storage,
   bucket: "uex"
 ```
 
+#### lib/storage.exs
 ```elixir
 defmodule MyApp.Storage do
   use Uex.FileStorage,
@@ -33,16 +36,20 @@ defmodule MyApp.Storage do
       s3: [acl: :public_read]
     ]
 end
+```
 
+## Simple upload
+
+```elixir
 #iex>
 Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
 |> MyApp.Storage.store()
 # {:ok, %Uex.Models.UploadedFile{}}
 ```
 
-# Middlewares
+## Middlewares
 
-## Cutom per operation
+### Cutom per operation
 
 ```elixir
 defmodule MyApp.Transform do
@@ -59,7 +66,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 # {:ok, [%Uex.Models.UploadedFile{}, %Uex.Models.UploadedFile{}]}
 ```
 
-## Custom per store
+### Custom per store
 
 ```elixir
 defmodule MyApp.Storage do
@@ -74,7 +81,7 @@ defmodule MyApp.Storage do
 end
 ```
 
-# Override store options before upload
+## Override store options before upload
 
 ```elixir
 #iex>
