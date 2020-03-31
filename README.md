@@ -36,9 +36,7 @@ defmodule MyApp.Storage do
 end
 
 #iex>
-Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png",
-  file_name: UUID.uuid4()
-)
+Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
 |> MyApp.Storage.store()
 # {:ok, %Uex.Models.UploadedFile{}}
 ```
