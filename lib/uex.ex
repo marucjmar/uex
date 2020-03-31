@@ -16,8 +16,13 @@ defmodule Uex do
     update_opts(model, :files_to_upload, file)
   end
 
-  defp update_opts(%__MODULE__{opts: opts} = model, key, value) do
+  def update_opts(%__MODULE__{opts: opts} = model, key, value) do
     model
     |> Map.put(:opts, Keyword.update(opts, key, [value], &(&1 ++ [value])))
+  end
+
+  def put_new_opts(%__MODULE__{opts: opts} = model, key, value) do
+    model
+    |> Map.put(:opts, Keyword.put_new(opts, key, value))
   end
 end
