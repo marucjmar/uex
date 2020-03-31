@@ -16,7 +16,7 @@ def deps do
 end
 ```
 
-#### config.exs
+#### config.ex
 ```elixir
 config :my_app, MyApp.Storage,
   access_key_id: "xxxxx",
@@ -25,7 +25,7 @@ config :my_app, MyApp.Storage,
   bucket: "uex"
 ```
 
-#### lib/storage.exs
+#### lib/storage.ex
 ```elixir
 defmodule MyApp.Storage do
   use Uex.FileStorage,
