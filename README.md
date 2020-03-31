@@ -56,6 +56,17 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 # {:ok, [%Uex.Models.UploadedFile{}, %Uex.Models.UploadedFile{}]}
 ```
 
+# Ovveride Options
+
+```elixir
+#iex>
+Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png",
+  file_name: UUID.uuid4()
+)
+|> MyApp.Storage.store(middlewares: [], sotrage_dir: "/foo/bar", s3: [acl: :private])
+# {:ok, %Uex.Models.UploadedFile{}}
+```
+
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/uex](https://hexdocs.pm/uex).
