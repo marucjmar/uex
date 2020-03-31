@@ -2,6 +2,14 @@ defmodule Uex do
   defstruct [:source, :opts, :file_path, :files_to_upload, middlewares: []]
   alias Uex.Models.UploadFile
 
+  @type t :: %__MODULE__{
+          source: any(),
+          opts: keyword(),
+          file_path: String.t(),
+          files_to_upload: list(),
+          middlewares: list()
+        }
+
   def new(source, opts \\ [])
 
   def new(source, opts) do

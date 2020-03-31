@@ -4,6 +4,12 @@ defmodule Uex.FileStorage do
       alias Uex.Models.UploadFile
       alias Uex.Uploader
 
+      otp_app = Keyword.get(opts, :otp_app) || raise "Missing `otp_app` option in store config"
+
+      opts =
+        Application.get_env(otp_app, __MODULE__)
+        |> Keyword.merge(opts)
+
       @adapter_module Keyword.fetch!(opts, :adapter)
       @adapter_opts @adapter_module.prepare_opts(opts)
       @preparer Keyword.get(opts, :preparer, Uex.Preparer)
