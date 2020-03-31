@@ -15,7 +15,6 @@ def deps do
 end
 ```
 
-# Base
 ```elixir
 config :my_app, MyApp.Storage,
   access_key_id: "xxxxx",
