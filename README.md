@@ -58,7 +58,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 # {:ok, [%Uex.Models.UploadedFile{}, %Uex.Models.UploadedFile{}]}
 ```
 
-# Ovveride Options
+# Override Options
 
 ```elixir
 #iex>
