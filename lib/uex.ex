@@ -8,16 +8,16 @@ defmodule Uex do
     %__MODULE__{source: source, opts: opts}
   end
 
-  def add_middleware(%__MODULE__{opts: opts} = model, callback) do
-    model
-    |> Map.update(:middlewares, [callback], &(&1 ++ [callback]))
+  def add_middleware(%__MODULE__{} = model, callback) do
+    update_opts(model, :middlewares, callback)
   end
 
-  def add_file_to_upload(%__MODULE__{opts: opts} = model, %UploadFile{file_path: path} = file) do
-    opts =
-      opts
-      |> Keyword.update(:files_to_upload, [file], &(&1 ++ [file]))
+  def add_file_to_upload(%__MODULE__{} = model, %UploadFile{} = file) do
+    update_opts(model, :files_to_upload, file)
+  end
 
-    %__MODULE__{model | opts: opts}
+  defp update_opts(%__MODULE__{opts: opts} = model, key, value) do
+    model
+    |> Map.put(:opts, Keyword.update(opts, key, [value], &(&1 ++ [value])))
   end
 end
