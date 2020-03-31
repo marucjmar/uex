@@ -33,7 +33,7 @@ end
 Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png",
   file_name: UUID.uuid4()
 )
-|> MyApp.Storage.Storage.store()
+|> MyApp.Storage.store()
 # {:ok, %Uex.Models.UploadedFile{}}
 ```
 
