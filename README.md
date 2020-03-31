@@ -49,9 +49,7 @@ defmodule MyApp.Transform do
   end
 end
 
-Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png",
-  file_name: UUID.uuid4()
-)
+Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
 |> Uex.add_middleware(&MyApp.Transform.rename_file/2)
 |> Uex.add_middleware(&Uex.Middlewares.Transform.transform/2)
 |> MyApp.Storage.store_all()
@@ -62,9 +60,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 
 ```elixir
 #iex>
-Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png",
-  file_name: UUID.uuid4()
-)
+Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
 |> MyApp.Storage.store(middlewares: [], sotrage_dir: "/foo/bar", s3: [acl: :private])
 # {:ok, %Uex.Models.UploadedFile{}}
 ```
