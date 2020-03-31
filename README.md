@@ -41,8 +41,9 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 
 ```elixir
 defmodule MyApp.Transform do
-  def rename_file(%Uex{file_path: path, file_name: file_name} = model, _) do
-    %Uex{model | file_name: file_name <> "<-my_awesome_file"}
+  def rename_file(%Uex{file_path: path, opts: opts} = uploader, _) do
+    uploader
+    |> Uex.put_opts(:file_name, "my_new_file_name")
   end
 end
 
@@ -50,7 +51,6 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
   file_name: UUID.uuid4()
 )
 |> Uex.add_middleware(&MyApp.Transform.rename_file/2)
-|> Uex.add_middleware(&Uex.Middlewares.Transform.transform/2)
 |> MyApp.Storage.Storage.store()
 # {:ok, %Uex.Models.UploadedFile{}}
 ```

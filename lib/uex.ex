@@ -25,4 +25,9 @@ defmodule Uex do
     model
     |> Map.put(:opts, Keyword.put_new(opts, key, value))
   end
+
+  def put_opts(%__MODULE__{opts: opts} = model, key, value) do
+    model
+    |> Map.put(:opts, Keyword.put(opts, key, value))
+  end
 end
