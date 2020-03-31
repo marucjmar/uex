@@ -15,6 +15,8 @@ def deps do
 end
 ```
 
+# Base
+
 ```elixir
 defmodule MyApp.Storage do
   use Uex.FileStorage,
