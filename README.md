@@ -58,6 +58,19 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 # {:ok, [%Uex.Models.UploadedFile{}, %Uex.Models.UploadedFile{}]}
 ```
 
+## Store custom middlewares
+
+defmodule MyApp.Storage do
+  use Uex.FileStorage,
+    otp_app: :my_app,
+    adapter: Uex.Adapter.S3,
+    upload_directory: "/dev",
+    middlewares: Uex.FileStorage.default_middlewares() ++ [&MyMiddleware.call/2],
+    default_opts: [
+      s3: [acl: :public_read]
+    ]
+end
+
 # Override Options
 
 ```elixir
