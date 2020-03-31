@@ -43,6 +43,8 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 
 # Middlewares
 
+## Cutom per operation
+
 ```elixir
 defmodule MyApp.Transform do
   def rename_file(%Uex{} = uploader, _) do
@@ -58,7 +60,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 # {:ok, [%Uex.Models.UploadedFile{}, %Uex.Models.UploadedFile{}]}
 ```
 
-## Store custom middlewares
+## Custom per store
 
 ```elixir
 defmodule MyApp.Storage do
@@ -73,7 +75,7 @@ defmodule MyApp.Storage do
 end
 ```
 
-# Override Options
+# Override store options before upload
 
 ```elixir
 #iex>
