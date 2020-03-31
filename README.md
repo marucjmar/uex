@@ -43,7 +43,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 
 ```elixir
 defmodule MyApp.Transform do
-  def rename_file(%Uex{file_path: path, opts: opts} = uploader, _) do
+  def rename_file(%Uex{} = uploader, _) do
     uploader
     |> Uex.put_opts(:file_name, "my_new_file_name")
   end
