@@ -15,7 +15,7 @@ defmodule Uex.Adapter.S3 do
 
   def upload_file(
         %UploadFile{file_path: path, name: file_name, opts: opts} = upload_file,
-        %{adapter_opts: adapter_opts},
+        %{adapter_opts: adapter_opts} = store,
         default_opts
       ) do
     opts =
@@ -24,6 +24,7 @@ defmodule Uex.Adapter.S3 do
 
     s3_opts =
       opts
+      |> Keyword.get(:default_opts)
       |> Keyword.get(:s3, [])
 
     path
@@ -38,14 +39,21 @@ defmodule Uex.Adapter.S3 do
       secret_access_key: Keyword.get(adapter_opts, :secret_access_key),
       region: Keyword.get(adapter_opts, :region)
     )
-    |> prepare_model(upload_file)
+    |> prepare_model(upload_file, opts, store)
   end
 
-  defp prepare_model(%{status_code: 200}, %UploadFile{file_path: path, name: name}) do
-    %UploadedFile{url: path, name: name}
+  defp prepare_model(%{status_code: 200}, %UploadFile{name: name}, opts, store) do
+    url =
+      "https://" <>
+        Keyword.get(store.adapter_opts, :bucket) <>
+        ".s3." <>
+        Keyword.get(store.adapter_opts, :region) <>
+        ".amazonaws.com" <> Path.join(Keyword.get(opts, :upload_directory), name)
+
+    %UploadedFile{url: url, name: name}
   end
 
-  defp prepare_model(_, _) do
+  defp prepare_model(_, _, _, _) do
     {:error, :error}
   end
 
