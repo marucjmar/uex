@@ -1,4 +1,4 @@
-# Uex in development stage, don't to use!
+# Uex in development stage!
 
 **TODO: Add description**
 
@@ -8,15 +8,17 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 by adding `uex` to your list of dependencies in `mix.exs`:
 
 #### mix.exs
+
 ```elixir
 def deps do
   [
-    {:uex, "~> 0.1.0"}
+    {:uex, "~> 0.0.1"}
   ]
 end
 ```
 
 #### config.ex
+
 ```elixir
 config :my_app, MyApp.Storage,
   access_key_id: "xxxxx",
@@ -26,6 +28,7 @@ config :my_app, MyApp.Storage,
 ```
 
 #### lib/storage.ex
+
 ```elixir
 defmodule MyApp.Storage do
   use Uex.FileStorage,
