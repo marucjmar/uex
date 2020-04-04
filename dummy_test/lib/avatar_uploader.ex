@@ -1,11 +1,10 @@
 defmodule DummyTest.AvatarUploader do
   alias DummyTest.CacheStore
-  alias Uex.Composer
   import Uex.Composer
 
   def upload do
     Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
-    |> CacheStore.store(middlewares: [])
+    |> CacheStore.store_all(middlewares: [&Uex.Middlewares.Transform.transform/2])
   end
 
   def upload_com do

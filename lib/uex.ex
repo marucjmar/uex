@@ -1,7 +1,7 @@
 defmodule Uex do
   @enforce_keys [:source]
 
-  defstruct [:source, :file_path, :file_name, meta: [], opts: []]
+  defstruct [:source, :file_path, :file_name, :tag, meta: [], opts: []]
 
   @type t :: %__MODULE__{
           source: any(),
@@ -15,8 +15,9 @@ defmodule Uex do
 
   def new(source, opts) do
     name = Keyword.get(opts, :file_name)
+    tag = Keyword.get(opts, :tag, :default)
 
-    %__MODULE__{source: source, file_name: name}
+    %__MODULE__{source: source, file_name: name, tag: tag}
   end
 
   def update_opts(%__MODULE__{opts: opts} = uex, key, value) do

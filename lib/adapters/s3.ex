@@ -55,6 +55,7 @@ defmodule Uex.Adapter.S3 do
     |> Map.put(:size, Uex.get_file_size(uex))
     |> Map.put(:extension, Uex.get_extension(uex))
     |> Map.put(:content_type, Uex.get_content_type(uex))
+    |> Map.put(:tag, uex.tag)
   end
 
   defp prepare_model(_, _, _, _) do

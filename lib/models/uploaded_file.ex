@@ -1,5 +1,5 @@
 defmodule Uex.Models.UploadedFile do
   @enforce_keys [:url]
 
-  defstruct [:url, :storage, :opts, :extension, :name, :size, :content_type]
+  defstruct [:url, :storage, :opts, :extension, :name, :size, :content_type, :tag]
 end
