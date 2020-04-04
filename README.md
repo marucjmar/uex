@@ -35,9 +35,7 @@ defmodule MyApp.Storage do
     otp_app: :my_app,
     adapter: Uex.Adapter.S3,
     upload_directory: "/dev",
-    default_opts: [
-      s3: [acl: :public_read]
-    ]
+    s3: [acl: :public_read]
 end
 ```
 
