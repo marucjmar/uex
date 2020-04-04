@@ -1,18 +1,21 @@
 defmodule Uex.PreparerTest do
   use ExUnit.Case
 
+  alias Uex.Preparer
+
   doctest Uex.Preparer
 
   describe "for %Plug.Upload{} source" do
     setup do
       source = %Plug.Upload{path: "test/fixtures/elixir_logo.png", filename: "logo.png"}
-      [model: Uex.new(source), source: source]
+      resolver = Uex.TestSourceResolver
+      [model: Uex.new(source), source: source, resolver: resolver]
     end
 
     test "should created %Uex{} struct", context do
       opts = [upload_direcotry: "/dev"]
 
-      assert Uex.Preparer.prepare(context[:model], opts) == %Uex{
+      assert Preparer.prepare(context[:model], context[:resolver], opts) == %Uex{
                source: context[:source],
                file_name: context[:source].filename,
                file_path: context[:source].path,
@@ -26,7 +29,9 @@ defmodule Uex.PreparerTest do
   describe "for url source" do
     setup do
       source = "https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png"
-      [model: Uex.new(source), source: source]
+      resolver = Uex.TestSourceResolver
+
+      [model: Uex.new(source), source: source, resolver: resolver]
     end
 
     test "should created %Uex{} struct", context do
@@ -35,31 +40,41 @@ defmodule Uex.PreparerTest do
       assert %Uex{
                source: context[:source],
                file_name: "Official_Elixir_logo.png",
-               file_path: "",
+               file_path: "test/fixtures/elixir_logo.png",
                tag: :original,
                opts: opts,
                meta: [file_size: 8290, content_type: "image/png", extension: ".png"]
-             } == Uex.Preparer.prepare(context[:model], opts)
+             } == Preparer.prepare(context[:model], context[:resolver], opts)
     end
 
     test "should created temp file", context do
-      uex = Uex.Preparer.prepare(context[:model], [])
+      uex = Preparer.prepare(context[:model], context[:resolver], [])
 
-      assert File.stat(uex.file_path)
+      assert File.stat!(uex.file_path)
+    end
+
+    test "should return error when file not found", context do
+      assert {:error, :unresolved} ==
+               Preparer.prepare(
+                 %Uex{context[:model] | source: "http://fail.png"},
+                 context[:resolver],
+                 []
+               )
     end
   end
 
   describe "for file path source" do
     setup do
       source = Path.expand("test/fixtures/elixir_logo.png")
+      resolver = Uex.TestSourceResolver
 
-      [model: Uex.new(source), source: source]
+      [model: Uex.new(source), source: source, resolver: resolver]
     end
 
     test "should created %Uex{} struct", context do
       opts = [upload_direcotry: "/dev"]
 
-      assert Uex.Preparer.prepare(context[:model], opts) == %Uex{
+      assert Preparer.prepare(context[:model], context[:resolver], opts) == %Uex{
                source: context[:source],
                file_name: "elixir_logo.png",
                file_path: context[:source],

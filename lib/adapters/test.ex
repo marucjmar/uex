@@ -17,4 +17,8 @@ defmodule Uex.Adapter.Test do
   def upload_file(%Uex{file_path: path, file_name: file_name, opts: opts, tag: tag}, _store) do
     %UploadedFile{url: path, name: file_name, opts: opts, tag: tag}
   end
+
+  def url_for_resource(model, _) do
+    model
+  end
 end

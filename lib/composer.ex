@@ -31,9 +31,10 @@ defmodule Uex.Composer do
   end
 
   def add_version(%__MODULE__{} = composer, version_name, callback) do
-    func = fn acc, uex_opts, uex_source ->
-      mod = callback.(version_name, uex_source, uex_opts)
-      |> Preparer.prepare(uex_opts)
+    func = fn acc, uex_opts, uex_source, resolver ->
+      mod =
+        callback.(version_name, uex_source, uex_opts)
+        |> Preparer.prepare(resolver, uex_opts)
 
       [acc] ++ [mod]
     end
@@ -42,40 +43,47 @@ defmodule Uex.Composer do
     |> add_middleware(func)
   end
 
-  def apply(%__MODULE__{} = composer, uex_opts) do
+  def apply(%__MODULE__{} = composer, uex_opts, store) do
     composer
-    |> apply_preparer(uex_opts)
+    |> apply_preparer(uex_opts, store)
     |> apply_validators()
-    |> apply_middlewares(uex_opts)
+    |> apply_middlewares(uex_opts, store)
   end
 
-  defp apply_preparer(%__MODULE__{uex: uex} = composer, uex_opts) do
-    %__MODULE__{composer | uex: Preparer.prepare(uex, uex_opts) }
+  defp apply_preparer(%__MODULE__{uex: uex} = composer, uex_opts, %{source_resolver: resolver}) do
+    %__MODULE__{composer | uex: Preparer.prepare(uex, resolver, uex_opts)}
   end
 
   def apply_validators(%__MODULE__{uex: uex, validators: validators} = composer) do
     validators
     |> Enum.map(fn {validator, opts} -> validator.(uex, opts) end)
     |> Enum.reduce(composer, fn
-      :ok, acc -> acc
+      :ok, acc ->
+        acc
+
       reply, acc ->
         put_error(acc, reply)
     end)
   end
 
-  defp apply_middlewares(%__MODULE__{errors: errors} = composer, _) when length(errors) > 0, do: composer
+  defp apply_middlewares(%__MODULE__{errors: errors} = composer, _, _) when length(errors) > 0,
+    do: composer
 
-  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares}, uex_opts) do
+  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares}, uex_opts, %{
+         source_resolver: resolver
+       }) do
     middlewares
     |> Enum.reduce(uex, fn
       callback, acc_module ->
-        case callback.(acc_module, uex_opts, uex) do
+        case callback.(acc_module, uex_opts, uex, resolver) do
           reply when is_list(reply) ->
             reply |> List.flatten()
+
           %Uex{} = reply ->
             reply
 
-          reply -> reply
+          reply ->
+            reply
         end
     end)
   end

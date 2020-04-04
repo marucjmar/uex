@@ -10,7 +10,8 @@ defmodule Uex.UploaderTest do
     setup do
       store = StorageTest
       source = Path.expand("test/fixtures/elixir_logo.png")
-      uex = Uex.new(source) |> Uex.Preparer.prepare([])
+      resolver = Uex.TestSourceResolver
+      uex = Uex.new(source) |> Uex.Preparer.prepare(resolver, [])
 
       [uex: uex, store: store, source: source]
     end
@@ -42,7 +43,8 @@ defmodule Uex.UploaderTest do
     setup do
       store = StorageTest
       source = Path.expand("test/fixtures/elixir_logo.png")
-      uex = Uex.new(source) |> Uex.Preparer.prepare([])
+      resolver = Uex.TestSourceResolver
+      uex = Uex.new(source) |> Uex.Preparer.prepare(resolver, [])
 
       [uex: uex, store: store, source: source]
     end

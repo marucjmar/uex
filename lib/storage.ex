@@ -3,6 +3,7 @@ defmodule Uex.FileStorage do
     quote bind_quoted: [opts: opts] do
       alias Uex.Models.UploadFile
       alias Uex.Uploader
+      alias Uex.Preparer
 
       otp_app = Keyword.get(opts, :otp_app) || raise "Missing `otp_app` option in store config"
 
@@ -12,7 +13,7 @@ defmodule Uex.FileStorage do
 
       @adapter_module Keyword.fetch!(opts, :adapter)
       @adapter_opts @adapter_module.prepare_opts(opts)
-      @preparer Keyword.get(opts, :preparer, Uex.Preparer)
+      @source_resolver Keyword.get(opts, :source_resolver, Uex.SourceResolver)
       @response_handler Keyword.get(opts, :response_handler, Uex.ResponseHandler)
       @opts opts
       @name Keyword.get(opts, :name, Atom.to_string(__MODULE__))
@@ -22,7 +23,8 @@ defmodule Uex.FileStorage do
 
       defstruct adapter_opts: @adapter_opts,
                 adapter_module: @adapter_module,
-                name: @name
+                name: @name,
+                source_resolver: @source_resolver
 
       def store(_source, override_opts \\ [])
 
@@ -30,7 +32,7 @@ defmodule Uex.FileStorage do
         uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         upload_model
-        |> @preparer.prepare(uex_opts)
+        |> Preparer.prepare(@source_resolver, uex_opts)
         |> apply_middlewares(override_opts)
         |> Uploader.store(%__MODULE__{})
         |> @response_handler.handle()
@@ -40,7 +42,7 @@ defmodule Uex.FileStorage do
         uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         composer
-        |> Uex.Composer.apply(uex_opts)
+        |> Uex.Composer.apply(uex_opts, %__MODULE__{})
         |> apply_middlewares(override_opts)
         |> Uploader.store(%__MODULE__{})
         |> @response_handler.handle()
@@ -52,7 +54,7 @@ defmodule Uex.FileStorage do
         uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         upload_model
-        |> @preparer.prepare(uex_opts)
+        |> Preparer.prepare(@source_resolver, uex_opts)
         |> apply_middlewares(override_opts)
         |> Uploader.store_all(%__MODULE__{})
         |> @response_handler.handle()
@@ -62,7 +64,7 @@ defmodule Uex.FileStorage do
         uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         composer
-        |> Uex.Composer.apply(uex_opts)
+        |> Uex.Composer.apply(uex_opts, %__MODULE__{})
         |> apply_middlewares(override_opts)
         |> Uploader.store_all(%__MODULE__{})
         |> @response_handler.handle()
@@ -72,7 +74,7 @@ defmodule Uex.FileStorage do
         uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         upload_models
-        |> Enum.map(&@preparer.prepare(&1, uex_opts))
+        |> Enum.map(&Preparer.prepare(@source_resolver, &1, uex_opts))
         |> apply_middlewares(override_opts)
         |> Uploader.store_all(%__MODULE__{})
         |> @response_handler.handle()
