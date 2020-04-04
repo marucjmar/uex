@@ -31,11 +31,11 @@ defmodule Uex.Composer do
   end
 
   def add_version(%__MODULE__{} = composer, version_name, callback) do
-    func = fn a, b, c ->
-      mod = callback.(version_name, c, b)
-      |> Preparer.prepare(b)
+    func = fn acc, uex_opts, uex_source ->
+      mod = callback.(version_name, uex_source, uex_opts)
+      |> Preparer.prepare(uex_opts)
 
-      [a] ++ [mod]
+      [acc] ++ [mod]
     end
 
     composer
@@ -63,7 +63,7 @@ defmodule Uex.Composer do
     end)
   end
 
-  defp apply_middlewares(%__MODULE__{errors: errors} = composer) when length(errors) > 0, do: composer
+  defp apply_middlewares(%__MODULE__{errors: errors} = composer, _) when length(errors) > 0, do: composer
 
   defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares}, uex_opts) do
     middlewares
