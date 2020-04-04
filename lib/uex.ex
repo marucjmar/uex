@@ -16,8 +16,9 @@ defmodule Uex do
   def new(source, opts) do
     name = Keyword.get(opts, :file_name)
     tag = Keyword.get(opts, :tag, :original)
+    opts = Keyword.get(opts, :opts, [])
 
-    %__MODULE__{source: source, file_name: name, tag: tag}
+    %__MODULE__{source: source, file_name: name, tag: tag, opts: opts}
   end
 
   def update_opts(%__MODULE__{opts: opts} = uex, key, value) do
@@ -54,5 +55,17 @@ defmodule Uex do
 
   def set_file_size(%__MODULE__{meta: meta} = uex, value) do
     %__MODULE__{uex | meta: Keyword.put(meta, :file_size, value)}
+  end
+
+  def get_upload_directory(%__MODULE__{opts: opts}) do
+    Keyword.get(opts, :upload_directory)
+  end
+
+  def set_upload_directory(%__MODULE__{opts: opts} = uex, value) do
+    %__MODULE__{uex | opts: Keyword.put(opts, :upload_directory, value)}
+  end
+
+  def default_opts() do
+    [:upload_directory]
   end
 end

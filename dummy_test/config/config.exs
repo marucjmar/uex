@@ -6,8 +6,6 @@ config :dummy_test, DummyTest.CacheStore,
   secret_access_key: "xxxxxxxxxxx",
   region: "eu-north-1",
   upload_directory: "/dev",
-  default_opts: [
-    s3: [acl: :public_read]
-  ]
+  s3: [acl: :public_read]
 
 import_config "dev.secre*.exs"

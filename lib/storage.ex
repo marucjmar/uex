@@ -7,8 +7,8 @@ defmodule Uex.FileStorage do
       otp_app = Keyword.get(opts, :otp_app) || raise "Missing `otp_app` option in store config"
 
       opts =
-        Application.get_env(otp_app, __MODULE__)
-        |> Keyword.merge(opts)
+        opts
+        |> Keyword.merge(Application.get_env(otp_app, __MODULE__))
 
       @adapter_module Keyword.fetch!(opts, :adapter)
       @adapter_opts @adapter_module.prepare_opts(opts)
@@ -17,6 +17,7 @@ defmodule Uex.FileStorage do
       @opts opts
       @name Keyword.get(opts, :name, Atom.to_string(__MODULE__))
       @middlewares Keyword.get(opts, :middlewares, [])
+      @uex_opts Keyword.get(opts, :uex_opts, Uex.default_opts()) ++ @adapter_module.uex_opts()
 
       defstruct adapter_opts: @adapter_opts,
                 adapter_module: @adapter_module,
@@ -25,54 +26,54 @@ defmodule Uex.FileStorage do
       def store(_source, override_opts \\ [])
 
       def store(%Uex{} = upload_model, override_opts) do
-        store_opts = Keyword.merge(unquote(opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
 
         upload_model
-        |> @preparer.prepare(store_opts)
-        |> apply_middlewares(store_opts)
-        |> Uploader.store(%__MODULE__{}, store_opts)
+        |> @preparer.prepare(uex_opts)
+        |> apply_middlewares(override_opts)
+        |> Uploader.store(%__MODULE__{})
         |> @response_handler.handle()
       end
 
       def store(%Uex.Composer{} = composer, override_opts) do
-        store_opts = Keyword.merge(unquote(opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
 
         composer
-        |> Uex.Composer.apply()
-        |> apply_middlewares(store_opts)
-        |> Uploader.store(%__MODULE__{}, store_opts)
+        |> Uex.Composer.apply(uex_opts)
+        |> apply_middlewares(override_opts)
+        |> Uploader.store(%__MODULE__{})
         |> @response_handler.handle()
       end
 
       def store_all(upload_model, override_opts \\ [])
 
       def store_all(%Uex{} = upload_model, override_opts) do
-        store_opts = Keyword.merge(unquote(opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
 
         upload_model
-        |> @preparer.prepare(store_opts)
-        |> apply_middlewares(store_opts)
-        |> Uploader.store_all(%__MODULE__{}, store_opts)
+        |> @preparer.prepare(uex_opts)
+        |> apply_middlewares(override_opts)
+        |> Uploader.store_all(%__MODULE__{})
         |> @response_handler.handle()
       end
 
       def store_all(%Uex.Composer{} = composer, override_opts) do
-        store_opts = Keyword.merge(unquote(opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
 
         composer
-        |> Uex.Composer.apply()
-        |> apply_middlewares(store_opts)
-        |> Uploader.store_all(%__MODULE__{}, store_opts)
+        |> Uex.Composer.apply(uex_opts)
+        |> apply_middlewares(override_opts)
+        |> Uploader.store_all(%__MODULE__{})
         |> @response_handler.handle()
       end
 
       def store_all([%Uex{} | _] = upload_models, override_opts) do
-        store_opts = Keyword.merge(unquote(opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
 
         upload_models
-        |> Enum.map(&@preparer.prepare(&1, store_opts))
-        |> apply_middlewares(store_opts)
-        |> Uploader.store_all(%__MODULE__{}, store_opts)
+        |> Enum.map(&@preparer.prepare(&1, uex_opts))
+        |> apply_middlewares(override_opts)
+        |> Uploader.store_all(%__MODULE__{})
         |> @response_handler.handle()
       end
 
@@ -83,6 +84,10 @@ defmodule Uex.FileStorage do
             callback.(acc_module, store_opts)
             |> List.flatten()
         end)
+      end
+
+      def url_for_resource(resource) do
+        @adapter_module.url_for_resource(resource, %__MODULE__{})
       end
     end
   end

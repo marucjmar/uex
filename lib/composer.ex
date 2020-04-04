@@ -42,15 +42,15 @@ defmodule Uex.Composer do
     |> add_middleware(func)
   end
 
-  def apply(%__MODULE__{} = composer) do
+  def apply(%__MODULE__{} = composer, uex_opts) do
     composer
-    |> apply_preparer()
+    |> apply_preparer(uex_opts)
     |> apply_validators()
-    |> apply_middlewares()
+    |> apply_middlewares(uex_opts)
   end
 
-  defp apply_preparer(%__MODULE__{uex: uex} = composer) do
-    %__MODULE__{composer | uex: Preparer.prepare(uex, []) }
+  defp apply_preparer(%__MODULE__{uex: uex} = composer, uex_opts) do
+    %__MODULE__{composer | uex: Preparer.prepare(uex, uex_opts) }
   end
 
   def apply_validators(%__MODULE__{uex: uex, validators: validators} = composer) do
@@ -65,11 +65,11 @@ defmodule Uex.Composer do
 
   defp apply_middlewares(%__MODULE__{errors: errors} = composer) when length(errors) > 0, do: composer
 
-  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares},  store_opts \\ []) do
+  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares}, uex_opts) do
     middlewares
     |> Enum.reduce(uex, fn
       callback, acc_module ->
-        case callback.(acc_module, store_opts, uex) do
+        case callback.(acc_module, uex_opts, uex) do
           reply when is_list(reply) ->
             reply |> List.flatten()
           %Uex{} = reply ->
