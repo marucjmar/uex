@@ -8,7 +8,7 @@ defmodule Uex.FileStorage do
 
       opts =
         opts
-        |> Keyword.merge(Application.get_env(otp_app, __MODULE__))
+        |> Keyword.merge(Application.get_env(otp_app, __MODULE__, []))
 
       @adapter_module Keyword.fetch!(opts, :adapter)
       @adapter_opts @adapter_module.prepare_opts(opts)
@@ -17,7 +17,8 @@ defmodule Uex.FileStorage do
       @opts opts
       @name Keyword.get(opts, :name, Atom.to_string(__MODULE__))
       @middlewares Keyword.get(opts, :middlewares, [])
-      @uex_opts_keys Keyword.get(opts, :uex_opts_keys, Uex.default_opts_keys()) ++ @adapter_module.uex_opts_keys()
+      @uex_opts_keys Keyword.get(opts, :uex_opts_keys, Uex.default_opts_keys()) ++
+                       @adapter_module.uex_opts_keys()
 
       defstruct adapter_opts: @adapter_opts,
                 adapter_module: @adapter_module,

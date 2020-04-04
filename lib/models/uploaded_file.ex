@@ -3,7 +3,7 @@ defmodule Uex.Models.UploadedFile do
 
   defstruct [:url, :storage, :opts, :extension, :name, :size, :content_type, :tag]
 
-  def to_uex(%__MODULE__{url: url, opts: opts, name: name} = model) do
+  def to_uex(%__MODULE__{url: url, opts: opts, name: name}) do
     %Uex{source: url, opts: opts, file_name: name}
   end
 end

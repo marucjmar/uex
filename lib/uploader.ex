@@ -2,13 +2,13 @@ defmodule Uex.Uploader do
   alias Uex
   alias Uex.Models.UploadedFile
 
-  def store( %Uex{} = uex, %{adapter_module: adapter_mod} = store ) do
+  def store(%Uex{} = uex, %{adapter_module: adapter_mod} = store) do
     uex
     |> adapter_mod.upload_file(store)
     |> prepare_response()
   end
 
-  def store([_], _), do: {:error, :multiple_files_provided}
+  def store([_ | _], _), do: {:error, :multiple_files_provided}
 
   def store(reply, _), do: reply
 
@@ -21,9 +21,11 @@ defmodule Uex.Uploader do
 
   def store_all(%Uex{}, _), do: {:error, :single_file_provided}
 
-  def prepare_response({:error, _} = error), do: error
+  def store_all(reply, _), do: reply
 
-  def prepare_response([_ | _] = response) do
+  defp prepare_response({:error, _} = error), do: error
+
+  defp prepare_response([_ | _] = response) do
     Enum.all?(response, fn
       {:ok, %UploadedFile{}} -> true
       _ -> false
@@ -37,5 +39,5 @@ defmodule Uex.Uploader do
     end
   end
 
-  def prepare_response(%UploadedFile{} = response), do: {:ok, response}
+  defp prepare_response(%UploadedFile{} = response), do: {:ok, response}
 end

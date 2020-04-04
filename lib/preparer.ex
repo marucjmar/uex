@@ -1,7 +1,7 @@
 defmodule Uex.Preparer do
   def prepare(%Uex{source: %Plug.Upload{path: path} = plug_upload} = model, store_opts) do
     %Uex{model | file_path: path}
-    |> Map.put(:file_name, plug_upload.file_name)
+    |> Map.put(:file_name, plug_upload.filename)
     |> _prepare(store_opts)
   end
 
@@ -24,7 +24,7 @@ defmodule Uex.Preparer do
     |> _prepare(store_opts)
   end
 
-  def _prepare(%Uex{} = uex, provided_opts) do
+  defp _prepare(%Uex{} = uex, provided_opts) do
     uex
     |> put_opts(provided_opts)
     |> put_meta()
@@ -33,7 +33,7 @@ defmodule Uex.Preparer do
   defp put_meta(%Uex{file_path: path, file_name: file_name} = uex) do
     with {:ok, %File.Stat{} = stat} <- File.stat(path) do
       uex
-      |> Uex.set_extension(Path.extname(file_name) || Path.extname(path))
+      |> Uex.set_extension(Path.extname(file_name || path))
       |> Uex.set_content_type(MIME.from_path(file_name))
       |> Uex.set_file_size(stat.size)
     end

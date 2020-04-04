@@ -14,9 +14,13 @@ defmodule Uex.MixProject do
       deps: deps(),
       description: description(),
       package: package(),
-      source_url: "https://github.com/marucjmar/uex"
+      source_url: "https://github.com/marucjmar/uex",
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   def application do
     [
@@ -33,7 +37,9 @@ defmodule Uex.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:jason, "~> 1.1"},
       {:sweet_xml, "~> 0.6"},
-      {:elixir_uuid, "~> 1.2"}
+      {:elixir_uuid, "~> 1.2"},
+      {:faker, "~> 0.13", only: :test},
+      {:mix_test_watch, "~> 1.0", only: :dev, runtime: false}
     ]
   end
 

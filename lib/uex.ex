@@ -21,18 +21,6 @@ defmodule Uex do
     %__MODULE__{source: source, file_name: name, tag: tag, opts: opts}
   end
 
-  def update_opts(%__MODULE__{opts: opts} = uex, key, value) do
-    %__MODULE__{uex | opts: Keyword.update(opts, key, [value], &(&1 ++ [value]))}
-  end
-
-  def put_new_opts(%__MODULE__{opts: opts} = uex, key, value) do
-    %__MODULE__{uex | opts: Keyword.put_new(opts, key, value)}
-  end
-
-  def put_opts(%__MODULE__{opts: opts} = uex, key, value) do
-    %__MODULE__{uex | opts: Keyword.put(opts, key, value)}
-  end
-
   def get_extension(%__MODULE__{meta: meta}) do
     Keyword.get(meta, :extension)
   end
