@@ -1,9 +1,6 @@
 defmodule DummyTest.PipelinerUploader do
   import Uex.Pipeliner
 
-  alias DummyTest.CacheStore
-  alias DummyTest.PersistentStore
-
   defdelegate pipe(source, stage), to: Uex.Pipeliner
 
   stage :cache do

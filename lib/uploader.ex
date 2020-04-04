@@ -3,7 +3,7 @@ defmodule Uex.Uploader do
   alias Uex.Models.UploadedFile
 
   def store(
-        %Uex{opts: opts} = uex,
+        %Uex{} = uex,
         %{adapter_module: adapter_mod} = store,
         store_opts
       ) do

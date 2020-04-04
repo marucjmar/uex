@@ -1,6 +1,4 @@
 defmodule Uex.Preparer do
-  import Uex, only: [put_new_opts: 3]
-
   def prepare(%Uex{source: %Plug.Upload{path: path} = plug_upload} = model, _store_opts) do
     %Uex{model | file_path: path}
     |> Map.put(:file_name, plug_upload.file_name)

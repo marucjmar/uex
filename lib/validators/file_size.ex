@@ -1,15 +1,15 @@
 defmodule Uex.Validators.FileSize do
-  def validate(%Uex{meta: meta} = model, opts) do
+  def validate(%Uex{} = model, opts) do
     opts
     |> Enum.reduce(model, fn
       opt, %Uex{} = model ->
         check(opt, model)
-      opt, reply ->
+      _opt, reply ->
         reply
     end)
   end
 
-  defp check({:error, _} = reply), do: reply
+  defp check({:error, _} = reply, _), do: reply
 
   defp check({:min, value}, %Uex{} = uex) do
     file_size = Uex.get_file_size(uex)

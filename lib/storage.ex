@@ -82,9 +82,6 @@ defmodule Uex.FileStorage do
           callback, acc_module ->
             callback.(acc_module, store_opts)
             |> List.flatten()
-
-          _callback, reply ->
-            reply
         end)
       end
     end

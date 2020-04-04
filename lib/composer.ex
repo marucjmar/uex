@@ -65,7 +65,7 @@ defmodule Uex.Composer do
 
   defp apply_middlewares(%__MODULE__{errors: errors} = composer) when length(errors) > 0, do: composer
 
-  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares} = composer,  store_opts \\ []) do
+  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares},  store_opts \\ []) do
     middlewares
     |> Enum.reduce(uex, fn
       callback, acc_module ->
@@ -77,9 +77,6 @@ defmodule Uex.Composer do
 
           reply -> reply
         end
-
-      _callback, reply ->
-        reply
     end)
   end
 
