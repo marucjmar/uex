@@ -1,32 +1,29 @@
 defmodule Uex.Middlewares.Transform do
   import Mogrify
 
-  alias Uex.Models.UploadFile
-
-  @versions [:medium, :thumb]
+  @versions [:original, :medium, :thumb]
 
   def transform(%Uex{} = model, _) do
     @versions
-    |> Enum.reduce(model, &transform_for_version/2)
+    |> Enum.map(&transform_for_version(&1, model))
+    |> Enum.map(&Uex.Preparer.prepare(&1, model))
   end
 
-  def transform_for_version(:medium, %Uex{file_path: path, opts: opts} = model) do
+  def transform_for_version(:medium, %Uex{file_path: path, file_name: file_name}) do
     %{path: path} = open(path) |> resize("200x200") |> save()
-    name = "medium_#{opts[:file_name]}"
+    name = "medium_#{file_name}"
 
-    model
-    |> Uex.add_file_to_upload(%UploadFile{file_path: path, name: name})
+    Uex.new(path, file_name: name)
   end
 
-  def transform_for_version(:thumb, %Uex{file_path: path, opts: opts} = model) do
-    name = "thumb_#{opts[:file_name]}"
-
+  def transform_for_version(:thumb, %Uex{file_path: path, file_name: file_name}) do
     %{path: path} = open(path) |> resize("100x100") |> save()
+    name = "thumb_#{file_name}"
 
+    Uex.new(path, file_name: name)
+  end
+
+  def transform_for_version(:original, %Uex{} = model) do
     model
-    |> Uex.add_file_to_upload(%UploadFile{
-      file_path: path,
-      name: name
-    })
   end
 end

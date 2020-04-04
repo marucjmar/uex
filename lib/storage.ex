@@ -16,67 +16,77 @@ defmodule Uex.FileStorage do
       @response_handler Keyword.get(opts, :response_handler, Uex.ResponseHandler)
       @opts opts
       @name Keyword.get(opts, :name, Atom.to_string(__MODULE__))
-      @middlewares Keyword.get(opts, :middlewares, Uex.FileStorage.default_middlewares())
+      @middlewares Keyword.get(opts, :middlewares, [])
 
       defstruct adapter_opts: @adapter_opts,
                 adapter_module: @adapter_module,
                 name: @name
 
-      def store(%Uex{} = upload_model, override_opts \\ []) do
-        upload_model
-        |> _store(override_opts, &Uploader.store/3)
-      end
+      def store(_source, override_opts \\ [])
 
-      def store_all(%Uex{} = upload_model, override_opts \\ []) do
-        upload_model
-        |> _store(override_opts, &Uploader.store_all/3)
-      end
-
-      defp _store(%Uex{} = upload_model, override_opts, uplader_func) do
+      def store(%Uex{} = upload_model, override_opts) do
         store_opts = Keyword.merge(unquote(opts), override_opts)
 
         upload_model
-        |> Map.update(:opts, @opts[:default_opts], &Keyword.merge(&1, @opts[:default_opts]))
         |> @preparer.prepare(store_opts)
         |> apply_middlewares(store_opts)
-        |> uplader_func.(%__MODULE__{}, store_opts)
+        |> Uploader.store(%__MODULE__{}, store_opts)
         |> @response_handler.handle()
       end
 
-      defp apply_middlewares(%Uex{middlewares: middlewares} = module, store_opts) do
-        (@middlewares ++ middlewares)
-        |> Enum.reduce(module, fn
-          callback, %Uex{} = acc_module ->
-            case callback.(acc_module, store_opts) do
-              %Uex{} = model ->
-                model
+      def store(%Uex.Composer{} = composer, override_opts) do
+        store_opts = Keyword.merge(unquote(opts), override_opts)
 
-              reply ->
-                reply
-            end
+        composer
+        |> Uex.Composer.apply()
+        |> apply_middlewares(store_opts)
+        |> Uploader.store(%__MODULE__{}, store_opts)
+        |> @response_handler.handle()
+      end
+
+      def store_all(upload_model, override_opts \\ [])
+
+      def store_all(%Uex{} = upload_model, override_opts) do
+        store_opts = Keyword.merge(unquote(opts), override_opts)
+
+        upload_model
+        |> @preparer.prepare(store_opts)
+        |> apply_middlewares(store_opts)
+        |> Uploader.store_all(%__MODULE__{}, store_opts)
+        |> @response_handler.handle()
+      end
+
+      def store_all(%Uex.Composer{} = composer, override_opts) do
+        store_opts = Keyword.merge(unquote(opts), override_opts)
+
+        composer
+        |> Uex.Composer.apply()
+        |> apply_middlewares(store_opts)
+        |> Uploader.store_all(%__MODULE__{}, store_opts)
+        |> @response_handler.handle()
+      end
+
+      def store_all([%Uex{} | _] = upload_models, override_opts) do
+        store_opts = Keyword.merge(unquote(opts), override_opts)
+
+        upload_models
+        |> Enum.map(&@preparer.prepare(&1, store_opts))
+        |> apply_middlewares(store_opts)
+        |> Uploader.store_all(%__MODULE__{}, store_opts)
+        |> @response_handler.handle()
+      end
+
+      defp apply_middlewares(models, store_opts) do
+        (@middlewares ++ Keyword.get(store_opts, :middlewares, []))
+        |> Enum.reduce(models, fn
+          callback, acc_module ->
+            callback.(acc_module, store_opts)
+            |> List.flatten()
 
           _callback, reply ->
             reply
         end)
       end
-
-      # alias Uex.Models.UploadedFile
-
-      # def recreate_url(storage, %UploadedFile{} = resource) do
-      #   @adapter_module.url_for(resource, @opts)
-      # end
-
-      # def move_resource_to(%UploadedFile{} = resource, storage) do
-      #   @adapter_module.move_resource(resource, @opts)
-      # end
-
-      # def copy_resource_to(%UploadedFile{} = resource, storage) do
-      #   @adapter_module.copy_resource(resource, @opts)
-      # end
     end
-  end
-
-  def default_middlewares() do
-    [&Uex.Middlewares.CreateOriginalFile.call/2]
   end
 end

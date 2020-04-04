@@ -52,7 +52,7 @@ Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_log
 
 ## Middlewares
 
-### Cutom per operation
+### per operation
 
 ```elixir
 defmodule MyApp.Transform do
@@ -63,13 +63,11 @@ defmodule MyApp.Transform do
 end
 
 Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
-|> Uex.add_middleware(&MyApp.Transform.rename_file/2)
-|> Uex.add_middleware(&Uex.Middlewares.Transform.transform/2)
-|> MyApp.Storage.store_all()
+|> MyApp.Storage.store(middlewares: [&MyApp.Transform.rename_file/2])
 # {:ok, [%Uex.Models.UploadedFile{}, %Uex.Models.UploadedFile{}]}
 ```
 
-### Custom per store
+### per store
 
 ```elixir
 defmodule MyApp.Storage do
@@ -77,7 +75,7 @@ defmodule MyApp.Storage do
     otp_app: :my_app,
     adapter: Uex.Adapter.S3,
     upload_directory: "/dev",
-    middlewares: Uex.FileStorage.default_middlewares() ++ [&MyMiddleware.call/2],
+    middlewares: [&MyMiddleware.call/2],
     default_opts: [
       s3: [acl: :public_read]
     ]
@@ -89,8 +87,29 @@ end
 ```elixir
 #iex>
 Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
-|> MyApp.Storage.store(middlewares: [], sotrage_dir: "/foo/bar", s3: [acl: :private])
+|> MyApp.Storage.store(strage_dir: "/foo/bar", s3: [acl: :private])
 # {:ok, %Uex.Models.UploadedFile{}}
+```
+
+## Composer
+
+```elixir
+defmodule MyApp.AvatarUploader do
+  alias DummyTest.CacheStore
+  import Uex.Composer
+
+  def upload do
+    Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
+    |> compose()
+    |> validate_file_size(max: 8290)
+    |> validate_extension([".jpg", ".jpeg", ".png"])
+    |> validate_content_type(["image/png"])
+    |> add_middleware(&Uex.Middlewares.Transform.transform/2)
+    |> CacheStore.store_all()
+  end
+end
+
+#iex> MyApp.AvatarUploader.upload()
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)

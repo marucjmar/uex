@@ -2,7 +2,6 @@ defmodule Uex.Adapter.S3 do
   @config_opts [:bucket, :access_key_id, :secret_access_key, :region]
 
   alias Uex
-  alias Uex.Models.UploadFile
   alias Uex.Models.UploadedFile
 
   def prepare_opts(opts) do
@@ -14,7 +13,7 @@ defmodule Uex.Adapter.S3 do
   end
 
   def upload_file(
-        %UploadFile{file_path: path, name: file_name, opts: opts} = upload_file,
+        %Uex{file_path: path, file_name: file_name, opts: opts} = upload_file,
         %{adapter_opts: adapter_opts} = store,
         default_opts
       ) do
@@ -42,7 +41,7 @@ defmodule Uex.Adapter.S3 do
     |> prepare_model(upload_file, opts, store)
   end
 
-  defp prepare_model(%{status_code: 200}, %UploadFile{name: name}, opts, store) do
+  defp prepare_model(%{status_code: 200}, %Uex{file_name: name} = uex, opts, store) do
     url =
       "https://" <>
         Keyword.get(store.adapter_opts, :bucket) <>
@@ -50,14 +49,19 @@ defmodule Uex.Adapter.S3 do
         Keyword.get(store.adapter_opts, :region) <>
         ".amazonaws.com" <> Path.join(Keyword.get(opts, :upload_directory), name)
 
-    %UploadedFile{url: url, name: name}
+    %UploadedFile{url: url}
+    |> Map.put(:name, name)
+    |> Map.put(:storage, store.name)
+    |> Map.put(:size, Uex.get_file_size(uex))
+    |> Map.put(:extension, Uex.get_extension(uex))
+    |> Map.put(:content_type, Uex.get_content_type(uex))
   end
 
   defp prepare_model(_, _, _, _) do
     {:error, :error}
   end
 
-  # defp url_for_resource(%UploadFile{}) do
+  # defp url_for_resource(%Uex{}) do
   #   Path.join(adapter.upload_directory, file_name)
   # end
 end

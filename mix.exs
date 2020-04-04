@@ -45,9 +45,8 @@ defmodule Uex.MixProject do
   defp package() do
     [
       name: "uex",
-      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
-                license* CHANGELOG* changelog* src),
-      licenses: ["MIT"],
+      maintainers: ["Marcin Lazar"],
+      licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/marucjmar/uex"}
     ]
   end
