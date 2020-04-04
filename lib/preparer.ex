@@ -1,6 +1,6 @@
 defmodule Uex.Preparer do
-  def prepare(%Uex{} = model, resolver, provided_opts) do
-    model
+  def prepare(%Uex{} = uex, resolver, provided_opts) do
+    uex
     |> resolver.resolve()
     |> put_opts(provided_opts)
     |> put_meta()
