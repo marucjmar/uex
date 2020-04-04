@@ -30,6 +30,18 @@ defmodule Uex.Composer do
     |> put_validator(&FileContentType.validate/2, opts)
   end
 
+  def add_version(%__MODULE__{} = composer, version_name, callback) do
+    func = fn a, b, c ->
+      mod = callback.(version_name, c, b)
+      |> Preparer.prepare(b)
+
+      [a] ++ [mod]
+    end
+
+    composer
+    |> add_middleware(func)
+  end
+
   def apply(%__MODULE__{} = composer) do
     composer
     |> apply_preparer()
@@ -53,11 +65,11 @@ defmodule Uex.Composer do
 
   defp apply_middlewares(%__MODULE__{errors: errors} = composer) when length(errors) > 0, do: composer
 
-  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares},  store_opts \\ []) do
+  defp apply_middlewares(%__MODULE__{uex: uex, middlewares: middlewares} = composer,  store_opts \\ []) do
     middlewares
     |> Enum.reduce(uex, fn
       callback, acc_module ->
-        case callback.(acc_module, store_opts) do
+        case callback.(acc_module, store_opts, uex) do
           reply when is_list(reply) ->
             reply |> List.flatten()
           %Uex{} = reply ->

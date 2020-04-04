@@ -33,7 +33,6 @@ defmodule Uex.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:jason, "~> 1.1"},
       {:sweet_xml, "~> 0.6"},
-      {:mogrify, "~> 0.7.3"},
       {:elixir_uuid, "~> 1.2"}
     ]
   end

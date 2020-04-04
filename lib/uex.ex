@@ -15,7 +15,7 @@ defmodule Uex do
 
   def new(source, opts) do
     name = Keyword.get(opts, :file_name)
-    tag = Keyword.get(opts, :tag, :default)
+    tag = Keyword.get(opts, :tag, :original)
 
     %__MODULE__{source: source, file_name: name, tag: tag}
   end
