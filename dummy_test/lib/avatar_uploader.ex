@@ -1,7 +1,8 @@
 defmodule DummyTest.AvatarUploader do
-  alias DummyTest.CacheStore
   import Uex.Composer
-  import Mogrify
+
+  alias DummyTest.CacheStore
+  alias Mogrify
 
   def upload_com do
     Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
@@ -15,13 +16,19 @@ defmodule DummyTest.AvatarUploader do
   end
 
   defp transform(:medium, %Uex{file_name: file_name, file_path: file_path}, _opts) do
-    %{path: path} = open(file_path) |> resize("200x200") |> save()
+    %{path: path} =
+      Mogrify.open(file_path)
+      |> Mogrify.resize("200x200")
+      |> Mogrify.save()
 
     Uex.new(path, file_name: "medium_#{file_name}", tag: :medium)
   end
 
   defp transform(:thumb, %Uex{file_name: file_name, file_path: file_path}, _opts) do
-    %{path: path} = open(file_path) |> resize("100x100") |> save()
+    %{path: path} =
+      Mogrify.open(file_path)
+      |> Mogrify.resize("100x100")
+      |> Mogrify.save()
 
     Uex.new(path, file_name: "thumb_#{file_name}", tag: :thumb)
   end
