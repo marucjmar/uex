@@ -65,7 +65,7 @@ defmodule Uex do
     %__MODULE__{uex | opts: Keyword.put(opts, :upload_directory, value)}
   end
 
-  def default_opts() do
+  def default_opts_keys() do
     [:upload_directory]
   end
 end

@@ -11,7 +11,7 @@ defmodule Uex.Adapter.S3 do
     end)
   end
 
-  def uex_opts() do
+  def uex_opts_keys() do
     [:s3]
   end
 

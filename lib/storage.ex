@@ -17,7 +17,7 @@ defmodule Uex.FileStorage do
       @opts opts
       @name Keyword.get(opts, :name, Atom.to_string(__MODULE__))
       @middlewares Keyword.get(opts, :middlewares, [])
-      @uex_opts Keyword.get(opts, :uex_opts, Uex.default_opts()) ++ @adapter_module.uex_opts()
+      @uex_opts_keys Keyword.get(opts, :uex_opts_keys, Uex.default_opts_keys()) ++ @adapter_module.uex_opts_keys()
 
       defstruct adapter_opts: @adapter_opts,
                 adapter_module: @adapter_module,
@@ -26,7 +26,7 @@ defmodule Uex.FileStorage do
       def store(_source, override_opts \\ [])
 
       def store(%Uex{} = upload_model, override_opts) do
-        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         upload_model
         |> @preparer.prepare(uex_opts)
@@ -36,7 +36,7 @@ defmodule Uex.FileStorage do
       end
 
       def store(%Uex.Composer{} = composer, override_opts) do
-        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         composer
         |> Uex.Composer.apply(uex_opts)
@@ -48,7 +48,7 @@ defmodule Uex.FileStorage do
       def store_all(upload_model, override_opts \\ [])
 
       def store_all(%Uex{} = upload_model, override_opts) do
-        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         upload_model
         |> @preparer.prepare(uex_opts)
@@ -58,7 +58,7 @@ defmodule Uex.FileStorage do
       end
 
       def store_all(%Uex.Composer{} = composer, override_opts) do
-        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         composer
         |> Uex.Composer.apply(uex_opts)
@@ -68,7 +68,7 @@ defmodule Uex.FileStorage do
       end
 
       def store_all([%Uex{} | _] = upload_models, override_opts) do
-        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts), override_opts)
+        uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         upload_models
         |> Enum.map(&@preparer.prepare(&1, uex_opts))
