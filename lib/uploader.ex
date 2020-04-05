@@ -1,5 +1,4 @@
 defmodule Uex.Uploader do
-  alias Uex
   alias Uex.Models.UploadedFile
 
   def store(%Uex{} = uex, %{adapter_module: adapter_mod} = store) do

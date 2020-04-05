@@ -73,10 +73,7 @@ defmodule MyApp.Storage do
     otp_app: :my_app,
     adapter: Uex.Adapter.S3,
     upload_directory: "/dev",
-    middlewares: [&MyMiddleware.call/2],
-    default_opts: [
-      s3: [acl: :public_read]
-    ]
+    middlewares: [&MyMiddleware.call/2]
 end
 ```
 
@@ -131,6 +128,9 @@ end
 
 #iex> MyApp.AvatarUploader.upload()
 ```
+
+##System design
+![System design](docs/system_design.png?raw=true)
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
