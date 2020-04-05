@@ -74,7 +74,7 @@ defmodule Uex.FileStorage do
         uex_opts = Keyword.merge(Keyword.take(@opts, @uex_opts_keys), override_opts)
 
         upload_models
-        |> Enum.map(&Preparer.prepare(@source_resolver, &1, uex_opts))
+        |> Enum.map(&Preparer.prepare(&1, @source_resolver, uex_opts))
         |> apply_middlewares(override_opts)
         |> Uploader.store_all(%__MODULE__{})
         |> @response_handler.handle()
@@ -83,9 +83,16 @@ defmodule Uex.FileStorage do
       defp apply_middlewares(models, store_opts) do
         (@middlewares ++ Keyword.get(store_opts, :middlewares, []))
         |> Enum.reduce(models, fn
+          _, {:error, _} = reply ->
+            reply
+
           callback, acc_module ->
             callback.(acc_module, store_opts)
-            |> List.flatten()
+            |> case do
+              :ok -> acc_module
+              {:error, _} = reply -> reply
+              reply -> reply
+            end
         end)
       end
 
