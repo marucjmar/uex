@@ -129,7 +129,8 @@ end
 #iex> MyApp.AvatarUploader.upload()
 ```
 
-##System design
+## System design
+
 ![System design](docs/system_design.png?raw=true)
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
