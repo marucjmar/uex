@@ -2,7 +2,6 @@ defmodule DummyTest.AvatarUploader do
   import Uex.Composer
 
   alias DummyTest.CacheStore
-  alias Mogrify
 
   def upload_com do
     Uex.new("https://upload.wikimedia.org/wikipedia/commons/9/92/Official_Elixir_logo.png")
